@@ -1,13 +1,15 @@
-export default class AbstractView{
-    constructor() {
-        
-    }
+export default class AbstractView {
+  constructor(param) {
+    this.params = param;
 
-    setTitile(title){
-        document.title = title
-    }
+    console.log(this.params);
+  }
 
-    async getHtml(){
-        return ``
-    }
+  setTitile(title) {
+    document.title = title;
+  }
+
+  async getHtml() {
+    return ``;
+  }
 }
