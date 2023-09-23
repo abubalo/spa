@@ -1,7 +1,21 @@
 import Dashboard from "./views/Dashboard.js";
-import Post from "./views/Post.js";
+import Posts from "./views/Posts.js";
+import PostView from "./views/PostView.js";
 import Settings from "./views/Settings.js";
 
+const pathToRegex = (path) =>
+  new RegExp("^" + path.replace("//\\g", "\\/").replace(/:\w+/g, "(.+)") + "$");
+
+const getParams = (match) => {
+  const values = match.result.slice(1);
+  const keys = Array.from(match.route.path.matchAll(/:(\w+)/g)).map(
+    (result) => result[1]
+  );
+
+  return Object.entries(keys.map((key, i)=>{
+    return [key, values[i]]
+  }));
+};
 const navigateTo = (url) => {
   history.pushState(null, null, url);
   router();
@@ -10,7 +24,8 @@ const navigateTo = (url) => {
 const router = async () => {
   const routes = [
     { path: "/", view: Dashboard },
-    { path: "/posts", view: Post },
+    { path: "/posts", view: Posts },
+    { path: "/posts/:id", view: PostView },
     { path: "/settings", view: Settings },
   ];
 
@@ -18,22 +33,22 @@ const router = async () => {
   const potentialMatches = routes.map((route) => {
     return {
       route: route,
-      isMatch: location.pathname === route.path,
+      result: location.pathname.match(pathToRegex(route.path)),
     };
   });
 
   let match = potentialMatches.find(
-    (potentialMatche) => potentialMatche.isMatch
+    (potentialMatche) => potentialMatche.result !== null
   );
 
   if (!match) {
     match = {
       route: route[0],
-      isMatch: true,
+      isMatch: [location.pathname],
     };
   }
 
-  const view = new match.route.view();
+  const view = new match.route.view(getParams(match));
   document.querySelector("#app").innerHTML = await view.getHtml();
 };
 
