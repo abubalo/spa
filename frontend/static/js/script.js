@@ -38,7 +38,7 @@ const router = async () => {
   if (!match) {
     match = {
       route: route[0],
-      resut: [location.pathname],
+      result: [location.pathname],
     };
   }
 
