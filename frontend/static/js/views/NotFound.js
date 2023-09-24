@@ -3,7 +3,7 @@ import AbstractView from "./AbstractView.js";
 export default class NotFound extends AbstractView {
   constructor(params) {
     super(params);
-    this.setTitile("Page not Found");
+    this.setTitle("Page not Found");
   }
 
   async getHtml() {

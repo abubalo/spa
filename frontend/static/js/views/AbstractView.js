@@ -32,7 +32,7 @@
    *
    * @returns {Promise<string>} A promise that resolves to the HTML content.
    */
-  async getHtml() {
+  async s() {
     // Return an empty string by default; subclasses should override this method
     return ``;
   }
