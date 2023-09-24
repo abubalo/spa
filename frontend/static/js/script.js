@@ -1,13 +1,10 @@
-import Dashboard from "./views/Dashboard.js";
-import Posts from "./views/Posts.js";
-import PostView from "./views/PostView.js";
-import Settings from "./views/Settings.js";
-
 const pathToRegex = (path) =>
   new RegExp("^" + path.replace("//\\g", "\\/").replace(/:\w+/g, "(.+)") + "$");
 
 const getParams = (match) => {
-  const keys = Array.from(match.route.path.matchAll(/:(\w+)/g)).map((result) => result[1]);
+  const keys = Array.from(match.route.path.matchAll(/:(\w+)/g)).map(
+    (result) => result[1]
+  );
   return Object.fromEntries(keys.map((key, i) => [key, match.result[i + 1]]));
 };
 const navigateTo = (url) => {
@@ -17,10 +14,10 @@ const navigateTo = (url) => {
 
 const router = async () => {
   const routes = [
-    { path: "/", view: Dashboard },
-    { path: "/posts", view: Posts },
-    { path: "/posts/:id", view: PostView },
-    { path: "/settings", view: Settings },
+    { path: "/", view: () => import("./views/Dashboard.js") },
+    { path: "/posts", view: () => import("./views/Posts") },
+    { path: "/posts/:id", view: () => import("./views/PostView") },
+    { path: "/settings", view: () => import("./views/Settings") },
   ];
 
   // Test each route for potential match
@@ -37,12 +34,15 @@ const router = async () => {
 
   if (!match) {
     match = {
-      route: route[0],
+      route: { view: () => import("./views/NotFound.js") },
       result: [location.pathname],
     };
   }
 
-  const view = new match.route.view(getParams(match));
+  // Dynamically import and render the view
+  const View = (await match.route.view()).default;
+  const view = new View(getParams(match));
+
   document.querySelector("#app").innerHTML = await view.getHtml();
 };
 
